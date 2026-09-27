@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEUMAR / Plan de desarrollo — Lanzamiento Ultra Force</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #0a0d14;
+            --bg-card: rgba(21, 28, 44, 0.88);
+            --border-color: rgba(230, 36, 41, 0.25);
+            --neumar-red: #e62429;
+            --neumar-red-glow: rgba(230, 36, 41, 0.4);
+            --martin-blue: #0088cc;
+            --martin-dark: #0f1d38;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: linear-gradient(rgba(10, 13, 20, 0.92), rgba(10, 13, 20, 0.96)), 
+                        url('https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=1600&auto=format&fit=crop') center/cover fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+
+        header {
+            background: rgba(15, 29, 56, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--neumar-red);
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 25px rgba(230, 36, 41, 0.2);
+        }
+
+        .brand-container { display: flex; align-items: center; gap: 1.2rem; }
+
+        .neumar-n-logo {
+            width: 44px; height: 44px;
+            background: #0f1d38;
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; font-weight: 900;
+            box-shadow: 0 0 15px var(--neumar-red-glow);
+        }
+
+        .header-title-box h1 {
+            font-size: 1.3rem; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;
+        }
+
+        .header-title-box p {
+            font-size: 0.8rem; color: var(--neumar-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--neumar-red) 0%, #b91c1c 100%);
+            color: #fff; border: none; padding: 0.7rem 1.4rem; border-radius: var(--radius-md);
+            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px var(--neumar-red-glow); transition: all 0.2s ease;
+        }
+
+        .btn-add:hover { transform: translateY(-2px); }
+
+        .user-bar {
+            background: rgba(15, 29, 56, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.8rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .user-bar select {
+            background: var(--bg-main); color: #fff; border: 1px solid var(--neumar-red);
+            padding: 0.4rem 0.9rem; border-radius: 6px; font-weight: 600;
+        }
+
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem; padding: 2rem 2.5rem;
+        }
+
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); padding: 1.4rem;
+            display: flex; flex-direction: column; gap: 0.9rem;
+            backdrop-filter: blur(8px); cursor: pointer; transition: all 0.25s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-4px); border-color: var(--neumar-red);
+            box-shadow: 0 8px 25px rgba(230, 36, 41, 0.3);
+        }
+
+        .card-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
+
+        .assignees-flex { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip-assignee {
+            background: rgba(0, 136, 204, 0.15); border: 1px solid rgba(0, 136, 204, 0.4);
+            color: #38bdf8; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+        }
+
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.8rem;
+            font-size: 0.8rem; color: var(--text-secondary);
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 13, 20, 0.88); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 1000;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+        .modal-content {
+            background: #111827; border: 1px solid var(--neumar-red);
+            border-radius: var(--radius-lg); width: 100%; max-width: 650px;
+            max-height: 90vh; overflow-y: auto; padding: 2rem;
+            display: flex; flex-direction: column; gap: 1.2rem;
+            box-shadow: 0 10px 40px rgba(230, 36, 41, 0.25);
+        }
+
+        .comments-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 220px; overflow-y: auto; }
+        .comment-box {
+            background: var(--bg-main); border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.8rem; border-radius: 8px; font-size: 0.85rem;
+        }
+        .comment-header { display: flex; justify-content: space-between; font-weight: 700; color: #38bdf8; margin-bottom: 0.3rem; }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+        .form-group input, .form-group textarea {
+            background: var(--bg-main); border: 1px solid rgba(255,255,255,0.15);
+            color: #fff; padding: 0.7rem; border-radius: 6px; outline: none;
+        }
+
+        .checkbox-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+            background: var(--bg-main); padding: 0.8rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sync-badge {
+            position: fixed; bottom: 1rem; right: 1rem; background: var(--neumar-red);
+            color: #fff; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: none;
+            box-shadow: 0 0 15px var(--neumar-red-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sync-badge" id="syncBadge"><i class="fa-solid fa-rotate fa-spin"></i> Sincronizando con Sheet...</div>
+
+    <header>
+        <div class="brand-container">
+            <div class="neumar-n-logo">
+                <span style="color:#fff;">N</span><span style="color:var(--neumar-red); margin-left:-3px;">E</span>
+            </div>
+            <div class="header-title-box">
+                <h1>NEUMAR / Plan de desarrollo — Lanzamiento Ultra Force</h1>
+                <p>Ecosistema Grupo Martín</p>
+            </div>
+        </div>
+        <button class="btn-add" onclick="openNewModal()">
+            <i class="fa-solid fa-plus"></i> Nueva Acción
+        </button>
+    </header>
+
+    <div class="user-bar">
+        <span><i class="fa-solid fa-user-check" style="color:var(--neumar-red)"></i> Operando como:</span>
+        <select id="currentUser">
+            <option value="Juan Ignacio Martin">Juan Ignacio Martin</option>
+            <option value="Martina Delpapa (Diseño)">Martina Delpapa (Diseño)</option>
+            <option value="Marcos Alcaraz (Paid Media)">Marcos Alcaraz (Paid Media)</option>
+            <option value="Fede Pereyra (Dev)">Fede Pereyra (Dev)</option>
+            <option value="Martín Luna (Lógica)">Martín Luna (Lógica)</option>
+            <option value="Federico Sánchez (Lógica)">Federico Sánchez (Lógica)</option>
+            <option value="Kili">Kili</option>
+            <option value="Mariano Fernandez">Mariano Fernandez</option>
+        </select>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <div class="modal-overlay" id="modalDetail">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="mTitle" style="color:#fff;"></h2>
+                <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('modalDetail')"></i>
+            </div>
+            <p id="mDesc" style="color:var(--text-secondary); font-size:0.9rem;"></p>
+            
+            <div>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">Responsables Asignados:</label>
+                <div class="assignees-flex" id="mAssignees" style="margin-top:0.4rem;"></div>
+            </div>
+
+            <hr style="border-color:rgba(255,255,255,0.1);">
+
+            <h3 style="font-size:1rem; color:#fff;"><i class="fa-solid fa-comments"></i> Historial de Comentarios</h3>
+            <div class="comments-list" id="mComments"></div>
+
+            <div class="form-group" style="margin-top:0.5rem;">
+                <label>Agregar Avance / Comentario:</label>
+                <textarea id="commentInput" rows="2" placeholder="Escribe novedades del avance..."></textarea>
+            </div>
+            <button class="btn-add" onclick="submitComment()"><i class="fa-solid fa-paper-plane"></i> Registrar Comentario</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalNew">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="color:#fff;">Cargar Nueva Acción</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('modalNew')"></i>
+            </div>
+            <form onsubmit="submitNewTask(event)">
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" id="newTitle" required placeholder="Ej: Pauta publicitaria redes">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="newDesc" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Responsables Múltiples *</label>
+                    <div class="checkbox-grid" id="teamCheckboxes"></div>
+                </div>
+                <button type="submit" class="btn-add" style="margin-top:1rem; width:100%;">Guardar Acción</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // COLOCAR AQUÍ LA URL GENERADA EN GOOGLE APPS SCRIPT
+        const API_URL = "https://script.google.com/macros/s/AKfycbxJJYBgysdPs2GQn1aq3Zu6VTqGGbP23zO8SSptGOe47iTiIkjUMoVsUXdmAkIeUCoGCQ/exec";
+
+        const TEAM = [
+            "Juan Ignacio Martin", "Martina Delpapa (Diseño)", 
+            "Marcos Alcaraz (Paid Media)", "Fede Pereyra (Dev)", 
+            "Martín Luna (Lógica)", "Federico Sánchez (Lógica)", 
+            "Kili", "Mariano Fernandez"
+        ];
+
+        let tasks = [];
+        let activeTaskId = null;
+
+        function toggleSync(show) { document.getElementById('syncBadge').style.display = show ? 'block' : 'none'; }
+
+        async function fetchTasks() {
+            toggleSync(true);
+            try {
+                if (!API_URL.includes("REEMPLAZAR")) {
+                    const res = await fetch(API_URL);
+                    tasks = await res.json();
+                } else {
+                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_structured')) || [];
+                }
+            } catch(e) { console.error(e); }
+            toggleSync(false);
+            render();
+        }
+
+        async function saveBackend() {
+            toggleSync(true);
+            if (!API_URL.includes("REEMPLAZAR")) {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(tasks) });
+            } else {
+                localStorage.setItem('neumar_tasks_structured', JSON.stringify(tasks));
+            }
+            toggleSync(false);
+            render();
+        }
+
+        function render() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            tasks.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openDetail(t.id);
+
+                const chips = (t.assignees || []).map(a => `<span class="chip-assignee">👤 ${a}</span>`).join('');
+                const commentsCount = t.comments ? t.comments.length : 0;
+
+                card.innerHTML = `
+                    <div class="card-title">${t.title}</div>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">${t.desc || ''}</p>
+                    <div class="assignees-flex">${chips}</div>
+                    <div class="card-footer">
+                        <span><i class="fa-regular fa-comments"></i> ${commentsCount} Comentarios</span>
+                        <span>📅 ${t.dueDate || 'Sin fecha'}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openDetail(id) {
+            activeTaskId = id;
+            const t = tasks.find(x => x.id === id);
+            document.getElementById('mTitle').textContent = t.title;
+            document.getElementById('mDesc').textContent = t.desc || '';
+            document.getElementById('mAssignees').innerHTML = (t.assignees || []).map(a => `<span class="chip-assignee">👤 ${a}</span>`).join('');
+            
+            renderComments(t);
+            document.getElementById('modalDetail').classList.add('active');
+        }
+
+        function renderComments(t) {
+            const list = document.getElementById('mComments');
+            list.innerHTML = '';
+            if (!t.comments || t.comments.length === 0) {
+                list.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">Sin novedades registradas.</p>';
+                return;
+            }
+            t.comments.forEach(c => {
+                const box = document.createElement('div');
+                box.className = 'comment-box';
+                box.innerHTML = `
+                    <div class="comment-header">
+                        <span>${c.author}</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">${c.date}</span>
+                    </div>
+                    <div>${c.text}</div>
+                `;
+                list.appendChild(box);
+            });
+        }
+
+        async function submitComment() {
+            const text = document.getElementById('commentInput').value.trim();
+            const author = document.getElementById('currentUser').value;
+            if(!text) return;
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            tasks = tasks.map(t => {
+                if (t.id === activeTaskId) {
+                    const comments = t.comments || [];
+                    return { ...t, comments: [...comments, { author, text, date: dateStr }] };
+                }
+                return t;
+            });
+
+            document.getElementById('commentInput').value = '';
+            renderComments(tasks.find(x => x.id === activeTaskId));
+            await saveBackend();
+        }
+
+        function openNewModal() {
+            const container = document.getElementById('teamCheckboxes');
+            container.innerHTML = TEAM.map(m => `
+                <label style="font-size:0.85rem; cursor:pointer;">
+                    <input type="checkbox" value="${m}"> ${m}
+                </label>
+            `).join('');
+            document.getElementById('modalNew').classList.add('active');
+        }
+
+        async function submitNewTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTitle').value;
+            const desc = document.getElementById('newDesc').value;
+            const checkboxes = document.querySelectorAll('#teamCheckboxes input:checked');
+            const assignees = Array.from(checkboxes).map(cb => cb.value);
+
+            if(assignees.length === 0) { alert("Selecciona al menos un responsable."); return; }
+
+            tasks.push({
+                id: Date.now(),
+                title,
+                desc,
+                assignees,
+                comments: [],
+                status: 'todo'
+            });
+
+            closeModal('modalNew');
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newDesc').value = '';
+            await saveBackend();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        fetchTasks();
+    </script>
+</body>
+</html>
