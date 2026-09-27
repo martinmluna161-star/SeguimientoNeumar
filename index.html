@@ -33,6 +33,7 @@
             padding-bottom: 2rem;
         }
 
+        /* HEADER & BRANDING */
         header {
             background: rgba(15, 29, 56, 0.85);
             backdrop-filter: blur(12px);
@@ -73,18 +74,67 @@
 
         .btn-add:hover { transform: translateY(-2px); }
 
-        .user-bar {
+        /* BARRA DE CONTROLES: BÚSQUEDA Y OPERADOR */
+        .controls-bar {
             background: rgba(15, 29, 56, 0.6);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 0.8rem 2.5rem;
             display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
         }
 
-        .user-bar select {
+        .search-box {
+            position: relative; width: 320px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 0.5rem 1rem 0.5rem 2.4rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .search-box input:focus { border-color: var(--martin-blue); }
+
+        .search-box i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 0.85rem;
+        }
+
+        .user-selector select {
             background: var(--bg-main); color: #fff; border: 1px solid var(--neumar-red);
             padding: 0.4rem 0.9rem; border-radius: 6px; font-weight: 600;
         }
 
+        /* SISTEMA DE PESTAÑAS (TABS) */
+        .tabs-nav {
+            display: flex; gap: 1rem; padding: 1.2rem 2.5rem 0 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-btn {
+            background: transparent; border: none;
+            color: var(--text-secondary);
+            padding: 0.8rem 1.4rem; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; position: relative; transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+        }
+
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%;
+            height: 3px; background: var(--neumar-red); border-radius: 3px 3px 0 0;
+            box-shadow: 0 0 10px var(--neumar-red);
+        }
+
+        /* GRID CARDS */
         .cards-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem; padding: 2rem 2.5rem;
@@ -117,6 +167,7 @@
             font-size: 0.8rem; color: var(--text-secondary);
         }
 
+        /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 13, 20, 0.88); backdrop-filter: blur(8px);
@@ -142,7 +193,7 @@
 
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
         .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
-        .form-group input, .form-group textarea {
+        .form-group input, .form-group textarea, .form-group select {
             background: var(--bg-main); border: 1px solid rgba(255,255,255,0.15);
             color: #fff; padding: 0.7rem; border-radius: 6px; outline: none;
         }
@@ -163,6 +214,7 @@
 
     <div class="sync-badge" id="syncBadge"><i class="fa-solid fa-rotate fa-spin"></i> Sincronizando con Sheet...</div>
 
+    <!-- HEADER DE NEUMAR -->
     <header>
         <div class="brand-container">
             <div class="neumar-n-logo">
@@ -170,7 +222,7 @@
             </div>
             <div class="header-title-box">
                 <h1>NEUMAR / Plan de desarrollo — Lanzamiento Ultra Force</h1>
-                <p>Ecosistema Grupo Martín</p>
+                <p>Grupo Martín</p>
             </div>
         </div>
         <button class="btn-add" onclick="openNewModal()">
@@ -178,22 +230,45 @@
         </button>
     </header>
 
-    <div class="user-bar">
-        <span><i class="fa-solid fa-user-check" style="color:var(--neumar-red)"></i> Operando como:</span>
-        <select id="currentUser">
-            <option value="Juan Ignacio Martin">Juan Ignacio Martin</option>
-            <option value="Martina Delpapa (Diseño)">Martina Delpapa (Diseño)</option>
-            <option value="Marcos Alcaraz (Paid Media)">Marcos Alcaraz (Paid Media)</option>
-            <option value="Fede Pereyra (Dev)">Fede Pereyra (Dev)</option>
-            <option value="Martín Luna (Lógica)">Martín Luna (Lógica)</option>
-            <option value="Federico Sánchez (Lógica)">Federico Sánchez (Lógica)</option>
-            <option value="Kili">Kili</option>
-            <option value="Mariano Fernandez">Mariano Fernandez</option>
-        </select>
+    <!-- BARRA DE CONTROLES: BÚSQUEDA Y USUARIO -->
+    <div class="controls-bar">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Buscar por tarea o responsable..." oninput="render()">
+        </div>
+
+        <div class="user-selector">
+            <span style="font-size:0.85rem; margin-right:8px;"><i class="fa-solid fa-user-check" style="color:var(--neumar-red)"></i> Operando como:</span>
+            <select id="currentUser">
+                <option value="Juan Ignacio Martin">Juan Ignacio Martin</option>
+                <option value="Martina Delpapa (Diseño)">Martina Delpapa (Diseño)</option>
+                <option value="Marcos Alcaraz (Paid Media)">Marcos Alcaraz (Paid Media)</option>
+                <option value="Fede Pereyra (Dev)">Fede Pereyra (Dev)</option>
+                <option value="Martín Luna (Lógica)">Martín Luna (Lógica)</option>
+                <option value="Federico Sánchez (Lógica)">Federico Sánchez (Lógica)</option>
+                <option value="Kili">Kili</option>
+                <option value="Mariano Fernandez">Mariano Fernandez</option>
+            </select>
+        </div>
     </div>
 
+    <!-- PESTAÑAS DE NAVEGACIÓN DE TAREAS -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">
+            <i class="fa-solid fa-layer-group"></i> Lanzamiento Ultra Force
+        </button>
+        <button class="tab-btn" id="tab-crm" onclick="switchTab('crm')">
+            <i class="fa-solid fa-headset"></i> Operaciones & CRM
+        </button>
+        <button class="tab-btn" id="tab-sales" onclick="switchTab('sales')">
+            <i class="fa-solid fa-truck-fast"></i> Acciones Comerciales & Giras
+        </button>
+    </div>
+
+    <!-- CARDS GRID -->
     <div class="cards-grid" id="cardsGrid"></div>
 
+    <!-- MODAL DETALLES & COMENTARIOS -->
     <div class="modal-overlay" id="modalDetail">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -220,6 +295,7 @@
         </div>
     </div>
 
+    <!-- MODAL NUEVA TAREA -->
     <div class="modal-overlay" id="modalNew">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -236,6 +312,14 @@
                     <textarea id="newDesc" rows="2"></textarea>
                 </div>
                 <div class="form-group">
+                    <label>Categoría / Pestaña</label>
+                    <select id="newCategory">
+                        <option value="all">Lanzamiento Ultra Force</option>
+                        <option value="crm">Operaciones & CRM</option>
+                        <option value="sales">Acciones Comerciales & Giras</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Responsables Múltiples *</label>
                     <div class="checkbox-grid" id="teamCheckboxes"></div>
                 </div>
@@ -245,7 +329,7 @@
     </div>
 
     <script>
-        // COLOCAR AQUÍ LA URL GENERADA EN GOOGLE APPS SCRIPT
+        // URL DE GOOGLE APPS SCRIPT
         const API_URL = "https://script.google.com/macros/s/AKfycbxJJYBgysdPs2GQn1aq3Zu6VTqGGbP23zO8SSptGOe47iTiIkjUMoVsUXdmAkIeUCoGCQ/exec";
 
         const TEAM = [
@@ -257,6 +341,7 @@
 
         let tasks = [];
         let activeTaskId = null;
+        let currentTab = 'all';
 
         function toggleSync(show) { document.getElementById('syncBadge').style.display = show ? 'block' : 'none'; }
 
@@ -267,7 +352,7 @@
                     const res = await fetch(API_URL);
                     tasks = await res.json();
                 } else {
-                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_structured')) || [];
+                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_v2')) || [];
                 }
             } catch(e) { console.error(e); }
             toggleSync(false);
@@ -279,9 +364,16 @@
             if (!API_URL.includes("REEMPLAZAR")) {
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(tasks) });
             } else {
-                localStorage.setItem('neumar_tasks_structured', JSON.stringify(tasks));
+                localStorage.setItem('neumar_tasks_v2', JSON.stringify(tasks));
             }
             toggleSync(false);
+            render();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
             render();
         }
 
@@ -289,7 +381,37 @@
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
 
-            tasks.forEach(t => {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            const filteredTasks = tasks.filter(t => {
+                // Filtro por Búsqueda (Título o Responsables)
+                const matchTitle = (t.title || '').toLowerCase().includes(query);
+                const matchAssignees = (t.assignees || []).some(a => a.toLowerCase().includes(query));
+                const matchSearch = matchTitle || matchAssignees;
+
+                // Filtro por Pestañas
+                let matchTab = true;
+                if (currentTab === 'crm') {
+                    matchTab = (t.title || '').toLowerCase().includes('crm') || 
+                               (t.title || '').toLowerCase().includes('whatsapp') || 
+                               (t.title || '').toLowerCase().includes('bot') ||
+                               (t.category === 'crm');
+                } else if (currentTab === 'sales') {
+                    matchTab = (t.title || '').toLowerCase().includes('gira') || 
+                               (t.title || '').toLowerCase().includes('seminario') || 
+                               (t.title || '').toLowerCase().includes('prospects') ||
+                               (t.category === 'sales');
+                }
+
+                return matchSearch && matchTab;
+            });
+
+            if (filteredTasks.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-muted); padding:3rem 0;">No se encontraron acciones en esta vista.</div>`;
+                return;
+            }
+
+            filteredTasks.forEach(t => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(t.id);
@@ -377,6 +499,7 @@
             e.preventDefault();
             const title = document.getElementById('newTitle').value;
             const desc = document.getElementById('newDesc').value;
+            const category = document.getElementById('newCategory').value;
             const checkboxes = document.querySelectorAll('#teamCheckboxes input:checked');
             const assignees = Array.from(checkboxes).map(cb => cb.value);
 
@@ -386,6 +509,7 @@
                 id: Date.now(),
                 title,
                 desc,
+                category,
                 assignees,
                 comments: [],
                 status: 'todo'
