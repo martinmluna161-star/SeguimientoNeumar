@@ -21,6 +21,11 @@
             --text-muted: #64748b;
             --radius-lg: 16px;
             --radius-md: 10px;
+
+            /* Badges de Estado */
+            --status-todo: #f59e0b;
+            --status-doing: #3b82f6;
+            --status-done: #10b981;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -74,7 +79,7 @@
 
         .btn-add:hover { transform: translateY(-2px); }
 
-        /* BARRA DE CONTROLES: BÚSQUEDA Y OPERADOR */
+        /* BARRA DE CONTROLES & FILTROS */
         .controls-bar {
             background: rgba(15, 29, 56, 0.6);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -83,9 +88,11 @@
             flex-wrap: wrap; gap: 1rem;
         }
 
-        .search-box {
-            position: relative; width: 320px;
+        .filter-group {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
         }
+
+        .search-box { position: relative; width: 280px; }
 
         .search-box input {
             width: 100%;
@@ -105,12 +112,19 @@
             color: var(--text-muted); font-size: 0.85rem;
         }
 
+        .select-custom {
+            background: var(--bg-main); color: #fff; border: 1px solid var(--border-color);
+            padding: 0.5rem 0.9rem; border-radius: 20px; font-size: 0.85rem; outline: none;
+        }
+
+        .select-custom:focus { border-color: var(--neumar-red); }
+
         .user-selector select {
             background: var(--bg-main); color: #fff; border: 1px solid var(--neumar-red);
             padding: 0.4rem 0.9rem; border-radius: 6px; font-weight: 600;
         }
 
-        /* SISTEMA DE PESTAÑAS (TABS) */
+        /* PESTAÑAS (TABS) */
         .tabs-nav {
             display: flex; gap: 1rem; padding: 1.2rem 2.5rem 0 2.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -124,9 +138,7 @@
             display: flex; align-items: center; gap: 8px;
         }
 
-        .tab-btn.active {
-            color: #ffffff;
-        }
+        .tab-btn.active { color: #ffffff; }
 
         .tab-btn.active::after {
             content: ''; position: absolute; bottom: -1px; left: 0; width: 100%;
@@ -152,6 +164,18 @@
             transform: translateY(-4px); border-color: var(--neumar-red);
             box-shadow: 0 8px 25px rgba(230, 36, 41, 0.3);
         }
+
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+
+        .status-badge {
+            font-size: 0.75rem; font-weight: 800; padding: 0.3rem 0.8rem;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+            cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
+
+        .status-todo { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .status-doing { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+        .status-done { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 
         .card-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
 
@@ -184,7 +208,7 @@
             box-shadow: 0 10px 40px rgba(230, 36, 41, 0.25);
         }
 
-        .comments-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 220px; overflow-y: auto; }
+        .comments-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 200px; overflow-y: auto; }
         .comment-box {
             background: var(--bg-main); border: 1px solid rgba(255,255,255,0.08);
             padding: 0.8rem; border-radius: 8px; font-size: 0.85rem;
@@ -208,13 +232,18 @@
             color: #fff; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: none;
             box-shadow: 0 0 15px var(--neumar-red-glow);
         }
+
+        .edit-assignees-box {
+            display: none; background: var(--bg-main); border: 1px solid var(--martin-blue);
+            padding: 0.8rem; border-radius: 8px; margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
 
     <div class="sync-badge" id="syncBadge"><i class="fa-solid fa-rotate fa-spin"></i> Sincronizando con Sheet...</div>
 
-    <!-- HEADER DE NEUMAR -->
+    <!-- HEADER NEUMAR -->
     <header>
         <div class="brand-container">
             <div class="neumar-n-logo">
@@ -230,11 +259,21 @@
         </button>
     </header>
 
-    <!-- BARRA DE CONTROLES: BÚSQUEDA Y USUARIO -->
+    <!-- BARRA DE CONTROLES, BÚSQUEDA Y FILTRO DE ESTADO -->
     <div class="controls-bar">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Buscar por tarea o responsable..." oninput="render()">
+        <div class="filter-group">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por tarea o responsable..." oninput="render()">
+            </div>
+
+            <!-- FILTRO POR ESTADO -->
+            <select id="filterStatus" class="select-custom" onchange="render()">
+                <option value="ALL">Todos los Estados</option>
+                <option value="todo">Pendiente</option>
+                <option value="doing">En Proceso</option>
+                <option value="done">Concretado</option>
+            </select>
         </div>
 
         <div class="user-selector">
@@ -252,7 +291,7 @@
         </div>
     </div>
 
-    <!-- PESTAÑAS DE NAVEGACIÓN DE TAREAS -->
+    <!-- PESTAÑAS (TABS) DE NAVEGACIÓN -->
     <div class="tabs-nav">
         <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">
             <i class="fa-solid fa-layer-group"></i> Lanzamiento Ultra Force
@@ -265,10 +304,10 @@
         </button>
     </div>
 
-    <!-- CARDS GRID -->
+    <!-- CONTENEDOR DE TARJETAS -->
     <div class="cards-grid" id="cardsGrid"></div>
 
-    <!-- MODAL DETALLES & COMENTARIOS -->
+    <!-- MODAL DE DETALLE, EDITAR RESPONSABLES Y COMENTARIOS -->
     <div class="modal-overlay" id="modalDetail">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -278,8 +317,20 @@
             <p id="mDesc" style="color:var(--text-secondary); font-size:0.9rem;"></p>
             
             <div>
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">Responsables Asignados:</label>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">Responsables Asignados:</label>
+                    <button style="background:transparent; border:none; color:#38bdf8; cursor:pointer; font-size:0.8rem; font-weight:600;" onclick="toggleEditAssignees()">
+                        <i class="fa-solid fa-user-pen"></i> Editar Responsables
+                    </button>
+                </div>
                 <div class="assignees-flex" id="mAssignees" style="margin-top:0.4rem;"></div>
+                
+                <!-- PANEL EDICIÓN DE RESPONSABLES -->
+                <div class="edit-assignees-box" id="editAssigneesBox">
+                    <label style="font-size:0.8rem; color:#fff; font-weight:700; margin-bottom:0.5rem; display:block;">Modificar Responsables:</label>
+                    <div class="checkbox-grid" id="editAssigneesCheckboxes"></div>
+                    <button class="btn-add" style="margin-top:0.8rem; padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="saveEditedAssignees()">Guardar Responsables</button>
+                </div>
             </div>
 
             <hr style="border-color:rgba(255,255,255,0.1);">
@@ -312,6 +363,14 @@
                     <textarea id="newDesc" rows="2"></textarea>
                 </div>
                 <div class="form-group">
+                    <label>Estado Inicial</label>
+                    <select id="newStatus">
+                        <option value="todo">Pendiente</option>
+                        <option value="doing">En Proceso</option>
+                        <option value="done">Concretado</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Categoría / Pestaña</label>
                     <select id="newCategory">
                         <option value="all">Lanzamiento Ultra Force</option>
@@ -329,7 +388,7 @@
     </div>
 
     <script>
-        // URL DE GOOGLE APPS SCRIPT
+        // COLOCAR AQUÍ TU URL GENERADA EN GOOGLE APPS SCRIPT
         const API_URL = "https://script.google.com/macros/s/AKfycbxJJYBgysdPs2GQn1aq3Zu6VTqGGbP23zO8SSptGOe47iTiIkjUMoVsUXdmAkIeUCoGCQ/exec";
 
         const TEAM = [
@@ -352,7 +411,7 @@
                     const res = await fetch(API_URL);
                     tasks = await res.json();
                 } else {
-                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_v2')) || [];
+                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_v3')) || [];
                 }
             } catch(e) { console.error(e); }
             toggleSync(false);
@@ -364,7 +423,7 @@
             if (!API_URL.includes("REEMPLAZAR")) {
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(tasks) });
             } else {
-                localStorage.setItem('neumar_tasks_v2', JSON.stringify(tasks));
+                localStorage.setItem('neumar_tasks_v3', JSON.stringify(tasks));
             }
             toggleSync(false);
             render();
@@ -377,17 +436,34 @@
             render();
         }
 
+        async function cycleStatus(e, id) {
+            e.stopPropagation(); // Evitar abrir modal al cambiar estado
+            const statusOrder = ['todo', 'doing', 'done'];
+            tasks = tasks.map(t => {
+                if (t.id === id) {
+                    const nextIndex = (statusOrder.indexOf(t.status || 'todo') + 1) % statusOrder.length;
+                    return { ...t, status: statusOrder[nextIndex] };
+                }
+                return t;
+            });
+            await saveBackend();
+        }
+
         function render() {
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
 
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterStatus = document.getElementById('filterStatus').value;
 
             const filteredTasks = tasks.filter(t => {
                 // Filtro por Búsqueda (Título o Responsables)
                 const matchTitle = (t.title || '').toLowerCase().includes(query);
                 const matchAssignees = (t.assignees || []).some(a => a.toLowerCase().includes(query));
                 const matchSearch = matchTitle || matchAssignees;
+
+                // Filtro por Estado
+                const matchStatus = (filterStatus === 'ALL') || (t.status === filterStatus);
 
                 // Filtro por Pestañas
                 let matchTab = true;
@@ -403,11 +479,11 @@
                                (t.category === 'sales');
                 }
 
-                return matchSearch && matchTab;
+                return matchSearch && matchStatus && matchTab;
             });
 
             if (filteredTasks.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-muted); padding:3rem 0;">No se encontraron acciones en esta vista.</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-muted); padding:3rem 0;">No se encontraron acciones con los filtros aplicados.</div>`;
                 return;
             }
 
@@ -416,10 +492,19 @@
                 card.className = 'card';
                 card.onclick = () => openDetail(t.id);
 
+                const currentSt = t.status || 'todo';
+                const statusClass = currentSt === 'todo' ? 'status-todo' : currentSt === 'doing' ? 'status-doing' : 'status-done';
+                const statusText = currentSt === 'todo' ? 'Pendiente' : currentSt === 'doing' ? 'En Proceso' : 'Concretado';
+
                 const chips = (t.assignees || []).map(a => `<span class="chip-assignee">👤 ${a}</span>`).join('');
                 const commentsCount = t.comments ? t.comments.length : 0;
 
                 card.innerHTML = `
+                    <div class="card-top">
+                        <span class="status-badge ${statusClass}" title="Hacer clic para cambiar estado" onclick="cycleStatus(event, ${t.id})">
+                            <i class="fa-solid fa-rotate"></i> ${statusText}
+                        </span>
+                    </div>
                     <div class="card-title">${t.title}</div>
                     <p style="font-size:0.85rem; color:var(--text-secondary);">${t.desc || ''}</p>
                     <div class="assignees-flex">${chips}</div>
@@ -439,8 +524,46 @@
             document.getElementById('mDesc').textContent = t.desc || '';
             document.getElementById('mAssignees').innerHTML = (t.assignees || []).map(a => `<span class="chip-assignee">👤 ${a}</span>`).join('');
             
+            document.getElementById('editAssigneesBox').style.display = 'none';
+
             renderComments(t);
             document.getElementById('modalDetail').classList.add('active');
+        }
+
+        function toggleEditAssignees() {
+            const box = document.getElementById('editAssigneesBox');
+            const isVisible = box.style.display === 'block';
+            
+            if (!isVisible) {
+                const t = tasks.find(x => x.id === activeTaskId);
+                const currentAssignees = t.assignees || [];
+                
+                const container = document.getElementById('editAssigneesCheckboxes');
+                container.innerHTML = TEAM.map(m => `
+                    <label style="font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" value="${m}" ${currentAssignees.includes(m) ? 'checked' : ''}> ${m}
+                    </label>
+                `).join('');
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        async function saveEditedAssignees() {
+            const checkboxes = document.querySelectorAll('#editAssigneesCheckboxes input:checked');
+            const newAssignees = Array.from(checkboxes).map(cb => cb.value);
+
+            if (newAssignees.length === 0) {
+                alert("Debes seleccionar al menos un responsable.");
+                return;
+            }
+
+            tasks = tasks.map(t => t.id === activeTaskId ? { ...t, assignees: newAssignees } : t);
+            
+            document.getElementById('mAssignees').innerHTML = newAssignees.map(a => `<span class="chip-assignee">👤 ${a}</span>`).join('');
+            document.getElementById('editAssigneesBox').style.display = 'none';
+            await saveBackend();
         }
 
         function renderComments(t) {
@@ -499,6 +622,7 @@
             e.preventDefault();
             const title = document.getElementById('newTitle').value;
             const desc = document.getElementById('newDesc').value;
+            const status = document.getElementById('newStatus').value;
             const category = document.getElementById('newCategory').value;
             const checkboxes = document.querySelectorAll('#teamCheckboxes input:checked');
             const assignees = Array.from(checkboxes).map(cb => cb.value);
@@ -509,10 +633,10 @@
                 id: Date.now(),
                 title,
                 desc,
+                status,
                 category,
                 assignees,
-                comments: [],
-                status: 'todo'
+                comments: []
             });
 
             closeModal('modalNew');
