@@ -22,7 +22,6 @@
             --radius-lg: 16px;
             --radius-md: 10px;
 
-            /* Badges de Estado */
             --status-todo: #f59e0b;
             --status-doing: #3b82f6;
             --status-done: #10b981;
@@ -38,7 +37,7 @@
             padding-bottom: 2rem;
         }
 
-        /* HEADER & BRANDING */
+        /* HEADER NEUMAR */
         header {
             background: rgba(15, 29, 56, 0.85);
             backdrop-filter: blur(12px);
@@ -79,7 +78,7 @@
 
         .btn-add:hover { transform: translateY(-2px); }
 
-        /* BARRA DE CONTROLES & FILTROS */
+        /* CONTROLES & FILTROS */
         .controls-bar {
             background: rgba(15, 29, 56, 0.6);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -88,21 +87,14 @@
             flex-wrap: wrap; gap: 1rem;
         }
 
-        .filter-group {
-            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-        }
+        .filter-group { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 
         .search-box { position: relative; width: 280px; }
 
         .search-box input {
-            width: 100%;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 0.5rem 1rem 0.5rem 2.4rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            outline: none;
+            width: 100%; background: var(--bg-main); border: 1px solid var(--border-color);
+            color: #fff; padding: 0.5rem 1rem 0.5rem 2.4rem; border-radius: 20px;
+            font-size: 0.85rem; outline: none;
         }
 
         .search-box input:focus { border-color: var(--martin-blue); }
@@ -117,24 +109,21 @@
             padding: 0.5rem 0.9rem; border-radius: 20px; font-size: 0.85rem; outline: none;
         }
 
-        .select-custom:focus { border-color: var(--neumar-red); }
-
         .user-selector select {
             background: var(--bg-main); color: #fff; border: 1px solid var(--neumar-red);
             padding: 0.4rem 0.9rem; border-radius: 6px; font-weight: 600;
         }
 
-        /* PESTAÑAS (TABS) */
+        /* PESTAÑAS (TABS POR FRENTE DE TRABAJO) */
         .tabs-nav {
             display: flex; gap: 1rem; padding: 1.2rem 2.5rem 0 2.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); overflow-x: auto;
         }
 
         .tab-btn {
-            background: transparent; border: none;
-            color: var(--text-secondary);
-            padding: 0.8rem 1.4rem; font-size: 0.9rem; font-weight: 700;
-            cursor: pointer; position: relative; transition: all 0.2s;
+            background: transparent; border: none; color: var(--text-secondary);
+            padding: 0.8rem 1.4rem; font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; position: relative; transition: all 0.2s; white-space: nowrap;
             display: flex; align-items: center; gap: 8px;
         }
 
@@ -168,7 +157,7 @@
         .card-top { display: flex; justify-content: space-between; align-items: center; }
 
         .status-badge {
-            font-size: 0.75rem; font-weight: 800; padding: 0.3rem 0.8rem;
+            font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.8rem;
             border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
             cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
@@ -176,6 +165,11 @@
         .status-todo { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
         .status-doing { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
         .status-done { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .phase-tag {
+            font-size: 0.7rem; font-weight: 700; color: var(--martin-blue);
+            background: rgba(0, 136, 204, 0.12); padding: 0.2rem 0.6rem; border-radius: 4px;
+        }
 
         .card-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
 
@@ -259,7 +253,7 @@
         </button>
     </header>
 
-    <!-- BARRA DE CONTROLES, BÚSQUEDA Y FILTRO DE ESTADO -->
+    <!-- BARRA DE CONTROLES, BÚSQUEDA Y FILTROS -->
     <div class="controls-bar">
         <div class="filter-group">
             <div class="search-box">
@@ -267,7 +261,6 @@
                 <input type="text" id="searchInput" placeholder="Buscar por tarea o responsable..." oninput="render()">
             </div>
 
-            <!-- FILTRO POR ESTADO -->
             <select id="filterStatus" class="select-custom" onchange="render()">
                 <option value="ALL">Todos los Estados</option>
                 <option value="todo">Pendiente</option>
@@ -291,23 +284,29 @@
         </div>
     </div>
 
-    <!-- PESTAÑAS (TABS) DE NAVEGACIÓN -->
+    <!-- PESTAÑAS SEPARADAS POR FRENTE DE TRABAJO -->
     <div class="tabs-nav">
         <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">
-            <i class="fa-solid fa-layer-group"></i> Lanzamiento Ultra Force
+            <i class="fa-solid fa-border-all"></i> Todas las Acciones
+        </button>
+        <button class="tab-btn" id="tab-ultraforce" onclick="switchTab('ultraforce')">
+            <i class="fa-solid fa-truck-monster"></i> 3. Ultra Force
+        </button>
+        <button class="tab-btn" id="tab-neumar" onclick="switchTab('neumar')">
+            <i class="fa-solid fa-building"></i> 1. New Neumar
+        </button>
+        <button class="tab-btn" id="tab-sunfull" onclick="switchTab('sunfull')">
+            <i class="fa-solid fa-circle-dot"></i> 2. Mundo Sunfull
         </button>
         <button class="tab-btn" id="tab-crm" onclick="switchTab('crm')">
-            <i class="fa-solid fa-headset"></i> Operaciones & CRM
-        </button>
-        <button class="tab-btn" id="tab-sales" onclick="switchTab('sales')">
-            <i class="fa-solid fa-truck-fast"></i> Acciones Comerciales & Giras
+            <i class="fa-solid fa-headset"></i> 4. Sistema Comercial / CRM
         </button>
     </div>
 
     <!-- CONTENEDOR DE TARJETAS -->
     <div class="cards-grid" id="cardsGrid"></div>
 
-    <!-- MODAL DE DETALLE, EDITAR RESPONSABLES Y COMENTARIOS -->
+    <!-- MODAL DETALLE Y COMENTARIOS -->
     <div class="modal-overlay" id="modalDetail">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -325,7 +324,6 @@
                 </div>
                 <div class="assignees-flex" id="mAssignees" style="margin-top:0.4rem;"></div>
                 
-                <!-- PANEL EDICIÓN DE RESPONSABLES -->
                 <div class="edit-assignees-box" id="editAssigneesBox">
                     <label style="font-size:0.8rem; color:#fff; font-weight:700; margin-bottom:0.5rem; display:block;">Modificar Responsables:</label>
                     <div class="checkbox-grid" id="editAssigneesCheckboxes"></div>
@@ -356,11 +354,29 @@
             <form onsubmit="submitNewTask(event)">
                 <div class="form-group">
                     <label>Título *</label>
-                    <input type="text" id="newTitle" required placeholder="Ej: Pauta publicitaria redes">
+                    <input type="text" id="newTitle" required placeholder="Ej: Producción de contenido audiovisual">
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
                     <textarea id="newDesc" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Frente de Trabajo / Categoría</label>
+                    <select id="newCategory">
+                        <option value="ultraforce">3. Ultra Force</option>
+                        <option value="neumar">1. New Neumar</option>
+                        <option value="sunfull">2. Mundo Sunfull</option>
+                        <option value="crm">4. Sistema Comercial / CRM</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fase Operativa</label>
+                    <select id="newPhase">
+                        <option value="Definición">Definición</option>
+                        <option value="Preparación">Preparación</option>
+                        <option value="Activación">Activación</option>
+                        <option value="Ejecución">Ejecución</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Estado Inicial</label>
@@ -368,14 +384,6 @@
                         <option value="todo">Pendiente</option>
                         <option value="doing">En Proceso</option>
                         <option value="done">Concretado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Categoría / Pestaña</label>
-                    <select id="newCategory">
-                        <option value="all">Lanzamiento Ultra Force</option>
-                        <option value="crm">Operaciones & CRM</option>
-                        <option value="sales">Acciones Comerciales & Giras</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -388,8 +396,8 @@
     </div>
 
     <script>
-        // COLOCAR AQUÍ TU URL GENERADA EN GOOGLE APPS SCRIPT
-        const API_URL = "https://script.google.com/macros/s/AKfycbxJJYBgysdPs2GQn1aq3Zu6VTqGGbP23zO8SSptGOe47iTiIkjUMoVsUXdmAkIeUCoGCQ/exec";
+        // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+        const API_URL = "https://script.google.com/macros/s/AKfycbxR1IkfO5M_paqVwoBE9VG18VnvVuYpdTGwu9IOo-f3L-eC2sOFFxswRSGAeEMEEBnOzw/exec";
 
         const TEAM = [
             "Juan Ignacio Martin", "Martina Delpapa (Diseño)", 
@@ -411,7 +419,7 @@
                     const res = await fetch(API_URL);
                     tasks = await res.json();
                 } else {
-                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_v3')) || [];
+                    tasks = JSON.parse(localStorage.getItem('neumar_tasks_unified')) || [];
                 }
             } catch(e) { console.error(e); }
             toggleSync(false);
@@ -423,7 +431,7 @@
             if (!API_URL.includes("REEMPLAZAR")) {
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(tasks) });
             } else {
-                localStorage.setItem('neumar_tasks_v3', JSON.stringify(tasks));
+                localStorage.setItem('neumar_tasks_unified', JSON.stringify(tasks));
             }
             toggleSync(false);
             render();
@@ -437,7 +445,7 @@
         }
 
         async function cycleStatus(e, id) {
-            e.stopPropagation(); // Evitar abrir modal al cambiar estado
+            e.stopPropagation();
             const statusOrder = ['todo', 'doing', 'done'];
             tasks = tasks.map(t => {
                 if (t.id === id) {
@@ -457,33 +465,18 @@
             const filterStatus = document.getElementById('filterStatus').value;
 
             const filteredTasks = tasks.filter(t => {
-                // Filtro por Búsqueda (Título o Responsables)
                 const matchTitle = (t.title || '').toLowerCase().includes(query);
                 const matchAssignees = (t.assignees || []).some(a => a.toLowerCase().includes(query));
                 const matchSearch = matchTitle || matchAssignees;
 
-                // Filtro por Estado
                 const matchStatus = (filterStatus === 'ALL') || (t.status === filterStatus);
-
-                // Filtro por Pestañas
-                let matchTab = true;
-                if (currentTab === 'crm') {
-                    matchTab = (t.title || '').toLowerCase().includes('crm') || 
-                               (t.title || '').toLowerCase().includes('whatsapp') || 
-                               (t.title || '').toLowerCase().includes('bot') ||
-                               (t.category === 'crm');
-                } else if (currentTab === 'sales') {
-                    matchTab = (t.title || '').toLowerCase().includes('gira') || 
-                               (t.title || '').toLowerCase().includes('seminario') || 
-                               (t.title || '').toLowerCase().includes('prospects') ||
-                               (t.category === 'sales');
-                }
+                const matchTab = (currentTab === 'all') || (t.category === currentTab);
 
                 return matchSearch && matchStatus && matchTab;
             });
 
             if (filteredTasks.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-muted); padding:3rem 0;">No se encontraron acciones con los filtros aplicados.</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-muted); padding:3rem 0;">No se encontraron acciones registradas.</div>`;
                 return;
             }
 
@@ -501,9 +494,10 @@
 
                 card.innerHTML = `
                     <div class="card-top">
-                        <span class="status-badge ${statusClass}" title="Hacer clic para cambiar estado" onclick="cycleStatus(event, ${t.id})">
+                        <span class="status-badge ${statusClass}" title="Cambiar estado" onclick="cycleStatus(event, ${t.id})">
                             <i class="fa-solid fa-rotate"></i> ${statusText}
                         </span>
+                        <span class="phase-tag">${t.phase || 'Fase'}</span>
                     </div>
                     <div class="card-title">${t.title}</div>
                     <p style="font-size:0.85rem; color:var(--text-secondary);">${t.desc || ''}</p>
@@ -622,8 +616,9 @@
             e.preventDefault();
             const title = document.getElementById('newTitle').value;
             const desc = document.getElementById('newDesc').value;
-            const status = document.getElementById('newStatus').value;
             const category = document.getElementById('newCategory').value;
+            const phase = document.getElementById('newPhase').value;
+            const status = document.getElementById('newStatus').value;
             const checkboxes = document.querySelectorAll('#teamCheckboxes input:checked');
             const assignees = Array.from(checkboxes).map(cb => cb.value);
 
@@ -633,8 +628,9 @@
                 id: Date.now(),
                 title,
                 desc,
-                status,
                 category,
+                phase,
+                status,
                 assignees,
                 comments: []
             });
